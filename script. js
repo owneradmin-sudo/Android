@@ -1,0 +1,95 @@
+'&// Get the display element
+const display = document.getElementById('display');
+
+// Append number to display
+function appendNumber(num) {
+    if (display.value.length < 50) {
+        display.value += num;
+    }
+}
+
+// Append operator to display
+function appendOperator(op) {
+    if (display.value && !display.value.endsWith(op)) {
+        display.value += op;
+    }
+}
+
+// Append function to display
+function appendFunction(func) {
+    if (display.value.length < 50) {
+        display.value += func;
+    }
+}
+
+// Append pi constant
+function appendPi() {
+    if (display.value.length < 50) {
+        display.value += Math.PI.toString();
+    }
+}
+
+// Clear display
+function clearDisplay() {
+    display.value = '';
+}
+
+// Delete last character
+function deleteLast() {
+    display.value = display.value.slice(0, -1);
+}
+
+// Calculate result
+function calculate() {
+    try {
+        let expression = display.value;
+        
+        // Replace mathematical functions with JavaScript equivalents
+        expression = expression.replace(/sin\(/g, 'Math.sin(');
+        expression = expression.replace(/cos\(/g, 'Math.cos(');
+        expression = expression.replace(/tan\(/g, 'Math.tan(');
+        expression = expression.replace(/sqrt\(/g, 'Math.sqrt(');
+        expression = expression.replace(/log\(/g, 'Math.log10(');
+        expression = expression.replace(/ln\(/g, 'Math.log(');
+        expression = expression.replace(/pow\(/g, 'Math.pow(');
+        
+        // Evaluate the expression
+        const result = eval(expression);
+        
+        // Display result with limited decimal places
+        if (typeof result === 'number') {
+            display.value = parseFloat(result.toFixed(10));
+        } else {
+            display.value = result;
+        }
+    } catch (error) {
+        display.value = 'Error';
+        console.error('Calculation error:', error);
+    }
+}
+
+// Allow keyboard input
+document.addEventListener('keydown', function(event) {
+    const key = event.key;
+    
+    if (key >= '0' && key <= '9') {
+        appendNumber(key);
+    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+        appendOperator(key);
+    } else if (key === '.' || key === ',') {
+        appendNumber('.');
+    } else if (key === 'Enter' || key === '=') {
+        event.preventDefault();
+        calculate();
+    } else if (key === 'Backspace') {
+        event.preventDefault();
+        deleteLast();
+    } else if (key === 'Escape') {
+        event.preventDefault();
+        clearDisplay();
+    } else if (key === '(') {
+        appendNumber('(');
+    } else if (key === ')') {
+        appendNumber(')');
+    }
+});
